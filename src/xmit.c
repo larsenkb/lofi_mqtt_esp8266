@@ -33,12 +33,10 @@ int ICACHE_FLASH_ATTR xfputc(int (*output_cb)(void *, char), void *param, char c
 int ICACHE_FLASH_ATTR xfputs(int (*output_cb)(void *, char), void *param, const char* str)
 {
     int ret  = 0, iret;
-    while (*str)
-    {
+    while (*str) {
         if ((iret = output_cb(param, *str++)) > 0)
             ret += iret;
-        else
-        {
+        else {
             // If there are output, we return number of output chars
             // Otherwise return error code
             // Caller can check return code to find partial output situation.
@@ -57,19 +55,14 @@ int ICACHE_FLASH_ATTR xvfprintf(int (*output_cb)(void *, char), void *param, con
     char s[16], c, d, *p;
     int ret = 0, iret;
 
-    for (;;)
-    {
+    for (;;) {
         c = *fmt++;                 /* Get a char */
         if (!c) break;              /* End of format? */
-        if (c != '%')               /* Pass through it if not a % sequence */
-        {
+        if (c != '%') {             /* Pass through it if not a % sequence */
             // xputc(c)
-            if ((iret = output_cb(param, c)) > 0)
-            {
+            if ((iret = output_cb(param, c)) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }
@@ -77,64 +70,48 @@ int ICACHE_FLASH_ATTR xvfprintf(int (*output_cb)(void *, char), void *param, con
         }
         f = 0;
         c = *fmt++;                 /* Get first char of the sequence */
-        if (c == '0')               /* Flag: '0' padded */
-        {
+        if (c == '0') {             /* Flag: '0' padded */
             f = 1; c = *fmt++;
-        }
-        else
-        {
-            if (c == '-')           /* Flag: left justified */
-            {
+        } else {
+            if (c == '-') {         /* Flag: left justified */
                 f = 2; c = *fmt++;
             }
         }
         for (w = 0; c >= '0' && c <= '9'; c = *fmt++)   /* Minimum width */
             w = w * 10 + c - '0';
-        if (c == 'l' || c == 'L')   /* Prefix: Size is long int */
-        {
+        if (c == 'l' || c == 'L') { /* Prefix: Size is long int */
             f |= 4; c = *fmt++;
         }
         if (!c) break;              /* End of format? */
         d = c;
         if (d >= 'a') d -= 0x20;
-        switch (d)                  /* Type is... */
-        {
+        switch (d) {                /* Type is... */
         case 'S' :                  /* String */
             p = va_arg(arg, char*);
             for (j = 0; p[j]; j++) ;
-            while (!(f & 2) && j++ < w)
-            {
+            while (!(f & 2) && j++ < w) {
                 // putc(' ');
-                if ((iret = output_cb(param, ' ')) > 0)
-                {
+                if ((iret = output_cb(param, ' ')) > 0) {
                     ret += iret;
-                }
-                else
-                {
+                } else {
                     ret = (ret == 0) ? iret : ret;
                     goto vfprintf_exit;
                 }
             }
             // xputs(p)
-            while (*p)
-            {
+            while (*p) {
                 if ((iret = output_cb(param, *p++)) > 0)
                     ret += iret;
-                else
-                {
+                else {
                     ret = (ret == 0) ? iret : ret;
                     goto vfprintf_exit;
                 }
             }
-            while (j++ < w)
-            {
+            while (j++ < w) {
                 // xputc(' ');
-                if ((iret = output_cb(param, ' ')) > 0)
-                {
+                if ((iret = output_cb(param, ' ')) > 0) {
                     ret += iret;
-                }
-                else
-                {
+                } else {
                     ret = (ret == 0) ? iret : ret;
                     goto vfprintf_exit;
                 }
@@ -142,12 +119,9 @@ int ICACHE_FLASH_ATTR xvfprintf(int (*output_cb)(void *, char), void *param, con
             continue;
         case 'C' :                  /* Character */
             // xputc((char)va_arg(arp, int));
-            if ((iret = output_cb(param, (char)va_arg(arg, int))) > 0)
-            {
+            if ((iret = output_cb(param, (char)va_arg(arg, int))) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }
@@ -163,12 +137,9 @@ int ICACHE_FLASH_ATTR xvfprintf(int (*output_cb)(void *, char), void *param, con
             r = 16; break;
         default:                    /* Unknown type (passthrough) */
             // xputc(c);
-            if ((iret = output_cb(param, c)) > 0)
-            {
+            if ((iret = output_cb(param, c)) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }
@@ -177,56 +148,42 @@ int ICACHE_FLASH_ATTR xvfprintf(int (*output_cb)(void *, char), void *param, con
 
         /* Get an argument and put it in numeral */
         v = (f & 4) ? va_arg(arg, long) : ((d == 'D') ? (long)va_arg(arg, int) : (long)va_arg(arg, unsigned int));
-        if (d == 'D' && (v & 0x80000000))
-        {
+        if (d == 'D' && (v & 0x80000000)) {
             v = 0 - v;
             f |= 8;
         }
         i = 0;
-        do
-        {
+        do {
             d = (char)(v % r); v /= r;
             if (d > 9) d += (c == 'x') ? 0x27 : 0x07;
             s[i++] = d + '0';
         } while (v && i < sizeof(s));
         if (f & 8) s[i++] = '-';
         j = i; d = (f & 1) ? '0' : ' ';
-        while (!(f & 2) && j++ < w)
-        {
+        while (!(f & 2) && j++ < w) {
             // xputc(d);
-            if ((iret = output_cb(param, d)) > 0)
-            {
+            if ((iret = output_cb(param, d)) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }
         }
-        do
-        {
+        do {
             // xputc(s[--i]);
-            if ((iret = output_cb(param, s[--i])) > 0)
-            {
+            if ((iret = output_cb(param, s[--i])) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }
         } while(i);
 
-        while (j++ < w)
-        {
+        while (j++ < w) {
             // xputc(' ');
-            if ((iret = output_cb(param, ' ')) > 0)
-            {
+            if ((iret = output_cb(param, ' ')) > 0) {
                 ret += iret;
-            }
-            else
-            {
+            } else {
                 ret = (ret == 0) ? iret : ret;
                 goto vfprintf_exit;
             }

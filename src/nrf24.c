@@ -145,7 +145,7 @@ extern xQueueHandle publish_queue;
 //char msg[50];
 //int value = 0;
 
-bool verbose = true;
+bool verbose = false;
 bool printMqtt = true;
 bool longStr = false;
 bool printPayload = false;
@@ -336,7 +336,7 @@ void ICACHE_FLASH_ATTR
 nrf_task(void * pvParameters)
 {
 
-	vTaskDelay(2000/portTICK_RATE_MS);
+//	vTaskDelay(2000/portTICK_RATE_MS);
 	vSemaphoreCreateBinary(sema_nrf);
 	nrfConfig();
 
@@ -636,8 +636,8 @@ void nrfPrintDetails(void)
 	dmsg_puts("================ SPI Configuration ================" );
 	dmsg_printf("CSN Pin  \t = Custom GPIO%d\n", nrfCSN  );
 	dmsg_printf("CE Pin  \t = Custom GPIO%d\n", nrfCE );
-	dmsg_puts("Clock Speed\t = " );
-	dmsg_puts("1 Mhz");
+	dmsg_puts("Clock Speed\t = 80 MHz" );
+	dmsg_puts("SPI is bit-banged");
 	dmsg_puts("================ NRF Configuration ================");
  
 

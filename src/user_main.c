@@ -241,10 +241,10 @@ LOCAL void ICACHE_FLASH_ATTR mqtt_task(void *pvParameters)
       data.password.cstring = MQTT_PASS;
       data.keepAliveInterval = 10;
       data.cleansession = 0;
-      dmsg_puts("Send MQTT connect ...");
+      dmsg_put("Send MQTT connect ...");
       ret = MQTTConnect(&client, &data);
       if (!ret) {
-        dmsg_puts("ok.\r\n");
+        dmsg_puts("ok.");
         // Subscriptions
 //        MQTTSubscribe(&client, "/mytopic", QOS1, topic_received);
         // Empty the publish queue
@@ -273,17 +273,17 @@ LOCAL void ICACHE_FLASH_ATTR mqtt_task(void *pvParameters)
             break;
           }
         }
-        dmsg_puts("Connection broken, request restart\r\n");
+        dmsg_puts("Connection broken, request restart");
       } else {
-        dmsg_puts("failed.\r\n");
+        dmsg_puts("failed.");
       }
       DisconnectNetwork(&network);
     } else {
-      dmsg_puts("failed.\r\n");
+      dmsg_puts("failed.");
     }
     vTaskDelay(1000 / portTICK_RATE_MS);
   }
-  dmsg_printf("MQTT task ended\r\n", ret);
+  dmsg_printf("MQTT task ended\n", ret);
   vTaskDelete(NULL);
 }
 

@@ -42,7 +42,13 @@ void dmsg_putchar(char c);
 
 /**
  * @brief   Output one string
- * @param   s String to output
+ * @param   s String with CR to output
+ */
+void dmsg_put(const char *s);
+
+/**
+ * @brief   Output one string
+ * @param   s String wo/ CR to output
  */
 void dmsg_puts(const char *s);
 
@@ -58,6 +64,7 @@ void dmsg_printf(const char *fmt, ...);
 #define dmsg_init(x)
 #define dmsg_putchar(x)
 #define dmsg_puts(x)
+#define dmsg_put(x)
 #define dmsg_printf(fmt, ...)
 
 #endif

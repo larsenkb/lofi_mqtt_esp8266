@@ -76,6 +76,12 @@ void ICACHE_FLASH_ATTR dmsg_putchar(char c)
 }
 
 
+void ICACHE_FLASH_ATTR dmsg_put(const char *s)
+{
+    xfputs(xout_cb, 0, s);
+}
+
+
 void ICACHE_FLASH_ATTR dmsg_puts(const char *s)
 {
     xfputs(xout_cb, 0, s);
